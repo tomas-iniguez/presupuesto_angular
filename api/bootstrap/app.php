@@ -48,6 +48,10 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->middleware([
+    App\Http\Middleware\CorsMiddleware::class
+ ]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
@@ -60,6 +64,8 @@ $app->singleton(
 */
 
 $app->configure('app');
+
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +117,5 @@ $app->router->group([
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
 });
-
-$app->withEloquent();
 
 return $app;
