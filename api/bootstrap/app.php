@@ -25,7 +25,7 @@ $app = new Laravel\Lumen\Application(
 
 // $app->withFacades();
 
-// $app->withEloquent();
+ $app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -64,8 +64,6 @@ $app->middleware([
 */
 
 $app->configure('app');
-
-$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
