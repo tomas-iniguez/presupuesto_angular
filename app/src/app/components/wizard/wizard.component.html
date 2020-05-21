@@ -1,12 +1,12 @@
 <mat-horizontal-stepper linear #stepper>
-    <mat-step [stepControl]="m2FormGroup">
-        <form [formGroup]="m2FormGroup" (ngSubmit)="clickMt()">
+    <mat-step [stepControl]="mt2FormGroup">
+        <form [formGroup]="mt2FormGroup" (ngSubmit)="clickMt()">
             <ng-template matStepLabel>Metros cuadrado</ng-template>
             <mat-form-field>
-                <input matInput type="number" placeholder="Metros cuadrado" formControlName="m2" required>
+                <input matInput type="number" placeholder="Metros cuadrado" formControlName="mt2" required>
             </mat-form-field>
-            <p class="text-danger" *ngIf="m2FormGroup['controls']['m2'].errors?.min">Minimo un 1 metro cuadrado!</p>
-            <p class="text-danger" *ngIf="m2NoValido">Campo obligatorio</p>
+            <p class="text-danger" *ngIf="mt2FormGroup['controls']['mt2'].errors?.min">Minimo un 1 metro cuadrado!</p>
+            <p class="text-danger" *ngIf="mt2NoValido">Campo obligatorio</p>
 
             <div class="text-right">
                 <button type="submit" matStepperNext class="btn btn-primary">Siguente</button>
@@ -17,10 +17,9 @@
         <form [formGroup]="tipoInmuebleFormGroup" (ngSubmit)="clickTipoInmueble()">
             <ng-template matStepLabel>Tipo Inmueble</ng-template>
             <mat-form-field>
+                <mat-label>Inmueble</mat-label>
                 <mat-select formControlName="tipoInmueble">
-                    <mat-option value="1">Casa</mat-option>
-                    <mat-option value="2">Dep</mat-option>
-                    <mat-option value="3">Oficina</mat-option>
+                    <mat-option *ngFor="let plan of tipoPlanes" [value]="plan.id">{{ plan.nombre }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <p class="text-danger" *ngIf="tipoInmuebleValido">Campo obligatorio</p>
@@ -32,12 +31,11 @@
     </mat-step>
     <mat-step [stepControl]="tipoPlanFormGroup">
         <form [formGroup]="tipoPlanFormGroup" (ngSubmit)="clickTipoPlan()">
-            <ng-template matStepLabel>Plan</ng-template>
+            <ng-template matStepLabel>Tipo Plan</ng-template>
             <mat-form-field>
+                <mat-label>Plan</mat-label>
                 <mat-select formControlName="tipoPlan">
-                    <mat-option value="1">Plan A</mat-option>
-                    <mat-option value="2">Plan B</mat-option>
-                    <mat-option value="3">Plan C</mat-option>
+                    <mat-option *ngFor="let inmueble of tipoInmuebles" [value]="inmueble.id">{{ inmueble.nombre }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <p class="text-danger" *ngIf="tipoPlanValido">Campo obligatorio</p>
@@ -68,7 +66,7 @@
                     <input matInput formControlName="telefono" required type="tel">
                     <p class="text-danger" *ngIf="telefonoValido">Campo obligatorio</p>
                 </mat-form-field>
-                <mat-checkbox class="example-margin" value="1" formControlName="termino" required>aceptar los terminos y condiciones</mat-checkbox>
+                <input type="checkbox" value="1" formControlName="termino" required>aceptar los terminos y condiciones
             </div>
             <div class="text-right">
                 <button matStepperPrevious class="btn btn-secondary m-1">Volver</button>
@@ -78,7 +76,7 @@
     </mat-step>
     <mat-step>
         <ng-template matStepLabel>Enviar</ng-template>
-        <p>Metros cuadrados {{presupuesto.m2 }}</p>
+        <p>Metros cuadrados {{presupuesto.mt2 }}</p>
         <p>Tipo inmueble {{ presupuesto.tipoInmueble }}</p>
         <p>tipo plan {{presupuesto.tipoPlan}}</p>
         <p>Contacto</p>

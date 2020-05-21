@@ -1,5 +1,5 @@
 export class PresupuestoModule {
-    m2: number;
+    mt2: number;
     tipoInmueble: number;
     tipoPlan: number;
     contacto = {

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
 
+
 import { PresupuestoModule } from '../../moduls/presupuesto.module';
+import { PresupuestoService } from '../../services/presupuesto.service';
 
 import Swal from 'sweetalert2';
 
@@ -12,15 +14,18 @@ import Swal from 'sweetalert2';
 })
 export class WizardComponent implements OnInit {
 
-  m2FormGroup: FormGroup;
+  mt2FormGroup: FormGroup;
   tipoInmuebleFormGroup: FormGroup;
   tipoPlanFormGroup: FormGroup;
   contactoFormGroup: FormGroup;
 
+  tipoPlanes: any[]    = [];
+  tipoInmuebles: any[] = [];
+
   presupuesto: PresupuestoModule = new PresupuestoModule() ;
 
-  get m2NoValido() {
-    return this.m2FormGroup.get('m2').invalid && this.m2FormGroup.get('m2').touched;
+  get mt2NoValido() {
+    return this.mt2FormGroup.get('mt2').invalid && this.mt2FormGroup.get('mt2').touched;
   }
   get tipoInmuebleValido(){
     return this.tipoInmuebleFormGroup.get('tipoInmueble').invalid && this.tipoInmuebleFormGroup.get('tipoInmueble').touched;
@@ -38,12 +43,12 @@ export class WizardComponent implements OnInit {
     return this.contactoFormGroup.get('telefono').invalid && this.contactoFormGroup.get('telefono').touched;
   }
   
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private _presupuestoService: PresupuestoService) { }
 
 
   ngOnInit(): void {
-    this.m2FormGroup = this._formBuilder.group({
-      m2: ['', [ Validators.required, Validators.min(1), Validators.pattern('^[0-9]*$')]  ]
+    this.mt2FormGroup = this._formBuilder.group({
+      mt2: ['', [ Validators.required, Validators.min(1), Validators.pattern('^[0-9]*$')]  ]
     });
     this.tipoInmuebleFormGroup = this._formBuilder.group({
       tipoInmueble: ['', Validators.required]
@@ -55,12 +60,19 @@ export class WizardComponent implements OnInit {
       nombre: ['', Validators.required],
       email : ['', [ Validators.required, Validators.email ] ],
       telefono: ['', [ Validators.required ] ],
-      termino: ['', Validators.required ]
+      termino: [false, Validators.required ]
+    });
+
+    this._presupuestoService.getCompotentes().subscribe( (resp: any) => {
+       if (resp.estado) {
+           this.tipoPlanes     = resp.tipoPlan;
+           this.tipoInmuebles  = resp.tipoInmueble;
+       }
     });
   }
   clickMt(){
-    if (this.m2FormGroup.invalid) {
-      return Object.values(this.m2FormGroup.controls).forEach(control => {
+    if (this.mt2FormGroup.invalid) {
+      return Object.values(this.mt2FormGroup.controls).forEach(control => {
         if ( control instanceof FormGroup ) {
           Object.values(control.controls).forEach( data => {
             data.markAllAsTouched();
@@ -70,8 +82,7 @@ export class WizardComponent implements OnInit {
         }
       });
     }
-    this.presupuesto.m2 =  this.m2FormGroup.value.m2; 
-    console.log(this.presupuesto);
+    this.presupuesto.mt2 =  this.mt2FormGroup.value.mt2; 
   }
   clickTipoInmueble(){
 
@@ -87,7 +98,6 @@ export class WizardComponent implements OnInit {
       });
     }
     this.presupuesto.tipoInmueble =  Number(this.tipoInmuebleFormGroup.value.tipoInmueble);
-    console.log(this.presupuesto);
   }
   clickTipoPlan(){
     if (this.tipoPlanFormGroup.invalid) {
@@ -102,7 +112,6 @@ export class WizardComponent implements OnInit {
       });
     }
     this.presupuesto.tipoPlan =  Number(this.tipoPlanFormGroup.value.tipoPlan);
-    console.log(this.presupuesto);
   }
   clickContacto(){
 
@@ -121,7 +130,28 @@ export class WizardComponent implements OnInit {
   }
 
   clickEnviar(){
-    console.log(this.presupuesto);
+    Swal.fire({
+      title: 'Espere',
+      text: 'mandando su información',
+      icon: 'info',
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
+
+    this._presupuestoService.enviarPresupuesto(this.presupuesto).subscribe( (resp: any) => {
+        if ( resp.estado ) {
+          Swal.fire({
+            title: 'Exito',
+            text: resp.resultado,
+            icon: 'success',
+            showConfirmButton: true,
+          }).then( mand => {
+            if (mand.value) {
+              window.location.reload();
+            }
+           });
+        }
+    });
   }
 
 }
